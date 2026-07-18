@@ -1,0 +1,33 @@
+/* ===========================================================================
+   OVERLAY SCROLLBAR THUMB — ported from Elixir Hour, retinted to BrawlHouse.
+
+   Why not style the native bar: on Windows the native page scrollbar is
+   space-taking (it reserves a gutter, and the page background paints THROUGH
+   it), so a "transparent track" reads as a permanent dark strip beside every
+   full-bleed image. A <div> can be truly invisible. So: hide the native bar,
+   draw our own thumb as a page element. Scrolling stays 100% native — wheel,
+   keys, space, touch. The thumb is an INDICATOR (and a drag handle), nothing
+   more. `html.sb-overlay` is added by js/scrollbar.js, only on a fine-pointer
+   device that can hover; touch keeps its native overlay bar; if the JS never
+   runs, the native bar is never hidden.
+   =========================================================================== */
+html.sb-overlay{scrollbar-width:none;}              /* Firefox */
+html.sb-overlay::-webkit-scrollbar{display:none;}   /* Chrome / Safari */
+
+.sb-thumb{
+  position:fixed;right:4px;top:0;width:8px;border-radius:4px;
+  /* a lighter shade of the page's own night — no new hue introduced */
+  background:color-mix(in srgb, #0B0E24, #ffffff 36%);
+  box-shadow:0 0 0 1px rgba(255,255,255,.10);
+  opacity:0;pointer-events:none;z-index:9999;
+  transition:opacity .28s ease, background-color .18s ease;
+}
+.sb-thumb.on{opacity:.6;pointer-events:auto;}
+/* on hover/drag it warms toward the purple accent, so the one interactive
+   chrome element still belongs to the palette */
+.sb-thumb.on:hover,
+.sb-thumb.drag{opacity:.95;background:color-mix(in srgb, #B24BE0, #ffffff 30%);}
+
+@media (hover:none){ .sb-thumb{display:none;} }
+@media (prefers-reduced-motion:reduce){ .sb-thumb{transition:none;} }
+@media print{ .sb-thumb{display:none;} }

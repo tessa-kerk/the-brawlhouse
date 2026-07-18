@@ -1,0 +1,379 @@
+/* ===========================================================================
+   The BrawlHouse — landing page redesign (BLOCKOUT: chapters 1–2).
+   Scrollytelling product page, same engine family as Elixir Hour:
+   native scroll + position:sticky pins (no scroll-jacking), transforms +
+   opacity only (GPU-safe), prefers-reduced-motion / no-JS -> composed frames,
+   zero external runtime deps. Palette + type are BrawlHouse's own.
+   =========================================================================== */
+
+/* ---- self-hosted fonts (latin woff2) ----
+   Lilita One  = chunky Brawl Stars poster display (headlines only)
+   Nunito      = rounded workhorse (body, UI, chips)
+   Caveat      = handwritten margin notes                                     */
+@font-face{font-family:'Lilita One';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/LilitaOne-400.woff2') format('woff2');}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:600 800;font-display:swap;src:url('../assets/fonts/Nunito-600.woff2') format('woff2');}
+@font-face{font-family:'Caveat';font-style:normal;font-weight:700;font-display:swap;src:url('../assets/fonts/Caveat-700.woff2') format('woff2');}
+
+:root{
+  --night:#0B0E24;        /* dominant ground — Starr Park sky at night */
+  --night-deep:#070914;   /* deeper pocket / vignette */
+  --night-soft:#141a3a;   /* raised panels */
+  --purple:#B24BE0;       /* the accent — the Secret Room's forbidden glow */
+  --magenta:#E0349C;      /* accent's hotter partner (sparingly) */
+  --amber:#F5B944;        /* warm room light (lanterns, bulbs) */
+  --file-gold:#FFD32A;    /* the prototype's evidence-file gold (fragment log) */
+  /* per-character colours — identical to the prototype's cast palette */
+  --c-gale:#4AA8C8; --c-janet:#E05A9A; --c-griff:#C8A228; --c-mrp:#A06ADA;
+  --cream:#F4ECDD;        /* text on night */
+  --cream-dim:#b9b6c9;    /* secondary text (tinted toward the night, not grey) */
+  --ink:#2a2140;          /* note ink */
+  --maxw:1180px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+html.reduce{scroll-behavior:auto;}
+body{
+  font-family:'Nunito',system-ui,sans-serif;font-weight:600;color:var(--cream);
+  background:var(--night);line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+/* fixed ambience: warm pocket top-left, purple pocket lower-right — the whole
+   page reads "warm rooms inside a cool night". Cheap fixed layer, no repaint. */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(55% 40% at 12% 6%, rgba(245,185,68,.06), transparent 60%),
+    radial-gradient(55% 45% at 88% 88%, rgba(178,75,224,.08), transparent 62%),
+    var(--night);
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+a:focus-visible,.cta:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:10px;}
+
+/* shared display heading + eyebrow ------------------------------------------ */
+.eyebrow{
+  display:inline-block;font-family:'Nunito',sans-serif;font-weight:800;
+  font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--purple);margin-bottom:14px;
+}
+h2.display{
+  font-family:'Lilita One',cursive;font-weight:400;
+  font-size:clamp(30px,5vw,58px);line-height:1.02;letter-spacing:.005em;
+  color:var(--cream);text-shadow:0 2px 0 rgba(0,0,0,.25);
+}
+
+/* Primary CTA — chunky Brawl Stars button, one hot accent, one shadow -------- */
+.cta{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'Lilita One',cursive;font-size:19px;letter-spacing:.02em;
+  padding:14px 30px;border-radius:16px;color:#fff;
+  background:linear-gradient(180deg,var(--magenta),var(--purple));
+  box-shadow:0 5px 0 #6d2a8f, 0 14px 26px rgba(178,75,224,.38);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.cta:hover{transform:translateY(-1px);box-shadow:0 6px 0 #6d2a8f, 0 18px 30px rgba(178,75,224,.5);}
+.cta:active{transform:translateY(4px);box-shadow:0 1px 0 #6d2a8f;}
+.cta.amber{background:linear-gradient(180deg,#ffd06a,var(--amber));color:#3a2600;box-shadow:0 5px 0 #b07d1e, 0 14px 26px rgba(245,185,68,.34);}
+.cta.amber:active{box-shadow:0 1px 0 #b07d1e;}
+
+/* ---------- pinned-scene mechanics (shared with Elixir Hour engine) --------- */
+.pin-wrap{position:relative;}
+.pin{position:sticky;top:0;height:100vh;overflow:hidden;}
+.hero-wrap{height:150vh;--p:0;}
+.checkin-wrap{height:340vh;--p:1;}
+/* no-JS + reduced motion: collapse the scrub into one screen, show the composed
+   frame (these --p defaults hold when scroll.js never sets them) */
+html:not(.js) .pin-wrap,
+html.reduce .pin-wrap{height:100vh !important;}
+
+/* =========================== CHAPTER 1 — HERO ============================= */
+.hero{background:var(--night);}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:62% 42%;opacity:.46;transform:scale(1.06);transform-origin:60% 45%;}
+/* the house is clearly a BACKDROP: a strong central darkening keeps the logo +
+   copy on calm ground, edges kept a touch lighter so the art still breathes */
+.hero-scrim{position:absolute;inset:0;background:
+  radial-gradient(115% 95% at 50% 44%, rgba(9,11,26,.72) 0%, rgba(9,11,26,.5) 34%, rgba(7,9,20,.32) 66%, rgba(7,9,20,.86) 100%),
+  linear-gradient(180deg, rgba(7,9,20,.78) 0%, rgba(11,14,36,.32) 34%, rgba(7,9,20,.94) 100%);}
+.hero-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+
+.hero-content{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:6vh 22px;
+  transform:translateY(calc(var(--p) * -6vh));
+  opacity:clamp(0, calc(1 - (var(--p) - .45) / .5), 1);}
+.hero-logo{width:min(560px,84vw);height:auto;
+  filter:drop-shadow(0 10px 22px rgba(0,0,0,.55)) drop-shadow(0 0 30px rgba(245,185,68,.18));}
+.hero-sub{font-weight:700;font-size:clamp(15px,1.85vw,20px);color:var(--cream);
+  max-width:52ch;margin:22px auto 0;line-height:1.5;text-shadow:0 1px 10px rgba(0,0,0,.7);}
+.hero-sub b{color:var(--amber);font-weight:800;}
+.hero-cta-row{margin-top:30px;}
+
+/* Case-file "evidence" tags — borrowed from the prototype's fragment log, not
+   Elixir Hour's paper clippings: Courier mono, gold on a dark file card, a gold
+   clearance bar down the left, uppercase and letterspaced. Same visual language
+   as the "0/7 FRAGMENTS FOUND" UI so the page and the prototype feel like one. */
+.chips{list-style:none;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+  margin-top:34px;max-width:760px;}
+.chip{font-family:'Courier New',ui-monospace,monospace;font-weight:700;
+  font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--file-gold);
+  background:rgba(11,13,24,.62);border:1px solid rgba(255,211,42,.28);
+  border-left:3px solid var(--file-gold);border-radius:3px;
+  padding:8px 14px 7px;box-shadow:0 6px 16px rgba(0,0,0,.5);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  display:inline-flex;align-items:center;gap:8px;}
+/* a small gold clearance LED before each line */
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--file-gold);box-shadow:0 0 8px rgba(255,211,42,.8);flex-shrink:0;}
+
+/* scroll cue ---------------------------------------------------------------- */
+.scrollcue{position:absolute;left:50%;bottom:3.5vh;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  opacity:clamp(0, calc(1 - var(--p) / .3), 1);pointer-events:none;}
+.cue-chevron{width:24px;height:24px;border-right:3px solid var(--amber);border-bottom:3px solid var(--amber);
+  transform:rotate(45deg);animation:cuebob 2s ease-in-out infinite;border-radius:2px;}
+.cue-label{font-family:'Lilita One',cursive;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:#d8cce8;}
+@keyframes cuebob{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(3px,3px);}}
+html.reduce .cue-chevron{animation:none;}
+
+/* ================= CHAPTER 2 — CHECK IN (room-by-room reveal) =============
+   The cutaway starts dim (night) and each room lights in sequence as you
+   scroll: Gale -> Janet -> Griff -> Mr. P's desk -> the Secret Room pulses
+   purple, last. Glow pools are screen-blended over the dimmed painting at
+   coordinates MEASURED from the artwork's lit windows (see build notes), so
+   they stay locked to each room at any viewport width.
+   ========================================================================== */
+.checkin{background:radial-gradient(90% 70% at 50% 42%, #171335, #0a0b1c 80%);
+  --reveal: clamp(0, calc(var(--p) / .10), 1);
+  --lit:    clamp(0, calc((var(--p) - .55) / .40), 1);
+  --gale:   clamp(0, calc((var(--p) - .08) / .16), 1);
+  --janet:  clamp(0, calc((var(--p) - .20) / .16), 1);
+  --griff:  clamp(0, calc((var(--p) - .32) / .16), 1);
+  --mrp:    clamp(0, calc((var(--p) - .46) / .16), 1);
+  --secret: clamp(0, calc((var(--p) - .62) / .22), 1);
+  --cap:    clamp(0, calc((var(--p) - .28) / .28), 1);
+  --note:   clamp(0, calc((var(--p) - .66) / .20), 1);
+}
+/* letterboxed 16:9 stage so every glow pool locks to the painting's coords */
+.ci-stage{position:absolute;inset:0;margin:auto;
+  width:min(100vw,177.78vh);height:min(56.25vw,100vh);}
+.ci-house{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:var(--reveal);
+  filter:brightness(calc(.42 + var(--lit)*.50)) saturate(calc(.55 + var(--lit)*.45));
+  transform:scale(calc(1.04 - var(--reveal)*.04));transform-origin:50% 45%;}
+.ci-night{position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg, rgba(9,11,26,.6), rgba(7,9,20,.84));
+  opacity:calc(.55 * (1 - var(--lit)));}
+/* corner vignette — cinematic falloff (below the zones so it never dims the neon) */
+.ci-stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(125% 115% at 50% 48%, transparent 60%, rgba(6,8,18,.66) 100%);}
+
+/* ROOM ZONES — the reveal lights each room's click-box, exactly as the
+   prototype highlights a room on hover (same rects, same per-character colours),
+   so the page and the prototype share one visual language. The glow rings the
+   room (rim + outer bloom); the centre stays clear so the Brawler is never
+   covered. Rects are the prototype's zone coords (verbatim), % of the 16:9 art. */
+.ci-zone{position:absolute;border-radius:16px;pointer-events:none;z-index:3;
+  border:2px solid var(--zc);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--zc), transparent 40%),
+    0 0 34px 3px color-mix(in srgb, var(--zc), transparent 42%),
+    inset 0 0 46px 2px color-mix(in srgb, var(--zc), transparent 60%);
+  /* interior wash bright at the edges, transparent over the middle (the face) */
+  background:radial-gradient(closest-side,
+    transparent 44%, color-mix(in srgb, var(--zc), transparent 84%) 74%, transparent 100%);
+  opacity:var(--zi);
+  transform:scale(calc(.985 + var(--zi)*.015));
+}
+.z-gale  {left:33%;top:16%;width:16%;height:32%;--zc:#4AA8C8;--zi:var(--gale);}
+.z-janet {left:52%;top:16%;width:17%;height:32%;--zc:#E05A9A;--zi:var(--janet);}
+.z-griff {left:72%;top:16%;width:24%;height:32%;--zc:#C8A228;--zi:var(--griff);}
+.z-mrp   {left:38%;top:56%;width:28%;height:33%;--zc:#A06ADA;--zi:var(--mrp);}
+/* door leaf measured at x77–91%, y54.5–91% — box hugs it tight (right edge was
+   already right; this closes the left gap and drops the bottom to the door base) */
+.z-secret{left:77%;top:54.5%;width:14%;height:36.5%;--zc:#B24BE0;--zi:calc(var(--secret)*.95);}
+
+/* soft left scrim — no hard box; deepens as the house lights up (--lit) so the
+   caption stays legible even once Starr Park brightens behind it at the finale.
+   Lives inside the stage now, so it tracks the house edge on ultrawide screens. */
+.ci-leftscrim{position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(90deg,
+    rgba(6,8,18,.92) 0%, rgba(6,8,18,.66) 22%, rgba(6,8,18,.18) 40%, transparent 54%);
+  opacity:calc(.4 + var(--lit)*.6);}
+
+/* caption — anchored to the STAGE's left edge (the stage is centred with
+   width min(100vw,177.78vh); its left edge = 50% - min(50vw,88.89vh)), so it
+   hugs the house at any width including ultrawide, not the far viewport edge.
+   Deliberately asymmetric; lifts in with --cap; held by the left scrim. */
+.ci-caption{position:absolute;top:50%;z-index:6;
+  left:calc(50% - min(50vw, 88.89vh) + clamp(16px, 2.2vw, 44px));
+  transform:translateY(calc(-50% + (1 - var(--cap))*18px));
+  max-width:min(30ch,27vw);opacity:var(--cap);
+  text-shadow:0 2px 18px rgba(6,8,18,.92), 0 1px 3px rgba(6,8,18,.85);}
+.ci-caption p{margin-top:14px;font-size:clamp(13px,1.35vw,17px);color:var(--cream-dim);line-height:1.6;}
+.ci-caption b{color:var(--cream);font-weight:800;}
+
+/* hand-drawn margin note — moved DOWN onto the clear floor below the door, where
+   the backdrop is just ground (not the busy room). The arrow points UP at the
+   chained door. Lives inside the stage so it tracks the door at any width. */
+.ci-note{position:absolute;left:72%;top:92%;width:24%;z-index:7;text-align:center;
+  opacity:var(--note);transform:translateY(calc((1 - var(--note))*10px));}
+.margin-note{font-family:'Caveat',cursive;font-weight:700;
+  font-size:clamp(17px,2vw,27px);color:#f2dca6;line-height:1.02;
+  transform:rotate(-3deg);display:inline-block;text-shadow:0 2px 10px rgba(0,0,0,.9);}
+.note-arrow{position:absolute;left:50%;transform:translateX(-50%);bottom:100%;
+  width:72px;height:58px;overflow:visible;}
+.note-arrow path{fill:none;stroke:#f2dca6;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.75));}
+
+/* ====================== SHARED — flowing chapters ======================== */
+.chapter{position:relative;padding:clamp(72px,11vh,132px) clamp(20px,6vw,64px);}
+.chapter .inner{max-width:var(--maxw);margin:0 auto;}
+.chead{max-width:620px;margin:0 auto clamp(34px,5vh,54px);}
+.chead.center{text-align:center;}
+.chead h2{margin-top:2px;}
+.chead p{margin-top:16px;color:var(--cream-dim);font-size:clamp(15px,1.5vw,18px);line-height:1.65;}
+.chead p b{color:var(--cream);font-weight:800;}
+
+/* ================= CHAPTER 3 — MEET THE RESIDENTS (rail) ================== */
+.residents{background:linear-gradient(180deg,#0a0c1e,#0b0e24);}
+.rail{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.res-card{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;
+  box-shadow:0 20px 44px rgba(0,0,0,.5);--cc:#fff;}
+.res-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:var(--op,center);transition:transform .45s ease;z-index:0;}
+.res-card:hover img{transform:scale(1.06);}
+/* a clean gradient base for the text — the character stays in the clear upper
+   two-thirds, the caption sits on darkened ground, so they never fight */
+.res-card::before{content:"";position:absolute;left:0;right:0;bottom:0;height:54%;z-index:1;
+  pointer-events:none;border-radius:0 0 18px 18px;
+  background:linear-gradient(180deg,transparent 0%,rgba(7,9,20,.35) 42%,rgba(6,8,18,.9) 76%,rgba(6,8,18,.97) 100%);}
+/* the same neon room-frame language as the reveal + the prototype hover */
+.res-card::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:18px;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--cc),transparent 46%);transition:box-shadow .3s ease;}
+.res-card:hover::after{box-shadow:inset 0 0 0 2px var(--cc),
+  inset 0 0 44px color-mix(in srgb,var(--cc),transparent 55%);}
+.res-body{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:20px 18px;}
+.res-name{font-family:'Lilita One',cursive;font-size:clamp(19px,1.8vw,24px);color:var(--cc);line-height:1;}
+.res-role{font-family:'Courier New',ui-monospace,monospace;font-size:10px;letter-spacing:1.6px;
+  text-transform:uppercase;color:var(--cream-dim);margin-top:5px;}
+.res-line{margin-top:11px;font-size:12.5px;line-height:1.5;color:var(--cream);opacity:.92;}
+/* per-card horizontal framing (16:9 art cropped to a 3:4 card pans on X) */
+.res-card.gale {--cc:var(--c-gale); --op:64% 50%;}
+.res-card.janet{--cc:var(--c-janet);--op:60% 50%;}
+.res-card.griff{--cc:var(--c-griff);--op:50% 50%;}
+.res-card.mrp  {--cc:var(--c-mrp);  --op:52% 50%;}
+
+/* ===================== CHAPTER 4 — THE MYSTERY (files) ==================== */
+.mystery{background:var(--night);}
+.evidence{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:860px;margin:0 auto;}
+.efile{background:rgba(11,13,24,.72);border:1px solid rgba(255,211,42,.2);
+  border-left:3px solid var(--file-gold);border-radius:5px;padding:16px 18px 17px;
+  box-shadow:0 10px 26px rgba(0,0,0,.4);}
+.efile .etag{font-family:'Courier New',ui-monospace,monospace;font-size:9.5px;letter-spacing:2px;
+  color:var(--file-gold);text-transform:uppercase;margin-bottom:9px;display:flex;
+  justify-content:space-between;gap:10px;opacity:.9;}
+.efile .ename{font-weight:800;font-size:14px;color:var(--cream);margin-bottom:7px;line-height:1.25;}
+.efile .ex{font-family:'Courier New',ui-monospace,monospace;font-size:11.5px;color:var(--cream-dim);line-height:1.6;}
+.redact{background:#141327;color:transparent;border-radius:2px;padding:0 3px;
+  user-select:none;box-shadow:inset 0 0 0 1px rgba(255,211,42,.12);}
+
+/* ============ CHAPTER 5 — THE SECRET ROOM (the locked door, teased) =======
+   Deliberately shows only the CHAINED DOOR, never the interior — what's inside
+   is the reveal players earn in the prototype, so the page mustn't spoil it. */
+.secret{position:relative;overflow:hidden;
+  background:radial-gradient(120% 100% at 86% 50%, #2a1350, #0a0714 66%);}
+.secret .inner{display:flex;align-items:center;gap:clamp(28px,5vw,64px);flex-wrap:wrap;}
+.secret-copy{flex:1 1 440px;}
+.secret-copy .eyebrow{color:#c98bff;}
+.secret-copy h2{max-width:15ch;}
+.secret-copy p{max-width:52ch;margin-top:16px;color:#ddd2ec;font-size:clamp(15px,1.6vw,18px);line-height:1.65;}
+.secret-copy p b{color:#fff;font-weight:800;}
+.secret-door{flex:0 1 360px;position:relative;border-radius:16px;overflow:hidden;margin:0;
+  box-shadow:0 30px 70px rgba(60,10,90,.5), 0 0 0 1px rgba(178,75,224,.25);}
+.secret-door img{display:block;width:100%;height:auto;}
+.secret-door::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:16px;
+  box-shadow:inset 0 0 60px rgba(150,50,220,.32);}
+
+/* ==================== CHAPTER 6 — TRY THE PROTOTYPE ====================== */
+.proto{background:linear-gradient(180deg,#0b0e24,#0a0c1e);}
+.proto-wrap{display:flex;gap:clamp(28px,5vw,60px);align-items:center;flex-wrap:wrap;}
+.proto-frame{flex:1 1 460px;min-width:280px;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);box-shadow:0 34px 80px rgba(0,0,0,.62);background:#11131f;}
+.proto-bar{height:36px;display:flex;align-items:center;gap:7px;padding:0 14px;
+  background:#171a2b;border-bottom:1px solid rgba(255,255,255,.06);}
+.proto-bar i{width:11px;height:11px;border-radius:50%;background:#3a3f55;}
+.proto-bar i:nth-child(1){background:#e0575f;} .proto-bar i:nth-child(2){background:#e8b24a;} .proto-bar i:nth-child(3){background:#4e9a51;}
+.proto-frame>img{display:block;width:100%;}
+.proto-copy{flex:1 1 320px;}
+.proto-copy p{color:var(--cream-dim);font-size:16px;line-height:1.7;margin:16px 0 26px;}
+.proto-copy p b{color:var(--cream);font-weight:800;}
+
+/* ============= CHAPTER 7 — BEHIND THE CONCEPT (the dossier) ============== */
+/* one continuous CCTV backdrop behind all three rows — the whole strategic
+   section reads as "inside the control room". A left-heavy scrim holds the
+   text; the monitors show through toward the right, uniformly across all rows */
+.dossier{position:relative;overflow:hidden;background:var(--night-deep);}
+.dossier .inner{max-width:980px;position:relative;z-index:1;}
+.dossier-bg{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.dossier-bg img{width:100%;height:100%;object-fit:cover;object-position:72% center;}
+.dossier-bg::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(90deg, rgba(7,9,20,.97) 0%, rgba(7,9,20,.93) 40%, rgba(7,9,20,.72) 72%, rgba(7,9,20,.5) 100%),
+  linear-gradient(180deg, rgba(7,9,20,.34), rgba(7,9,20,.5));}
+.dsec{border-top:1px solid rgba(255,255,255,.12);padding:clamp(28px,4vh,40px) 0;
+  display:grid;grid-template-columns:180px 1fr;gap:clamp(16px,3vw,40px);}
+.dsec:first-of-type{border-top:none;}
+.dlabel{font-family:'Courier New',ui-monospace,monospace;font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--file-gold);padding-top:6px;}
+.dsec h3{font-family:'Lilita One',cursive;font-weight:400;font-size:clamp(20px,2.4vw,28px);
+  color:var(--cream);line-height:1.08;margin-bottom:12px;}
+.dsec p{color:var(--cream-dim);font-size:15px;line-height:1.7;max-width:56ch;}
+.dsec p b{color:var(--cream);font-weight:800;}
+.dsec .src{font-family:'Courier New',ui-monospace,monospace;font-size:10.5px;color:var(--gray-500,#7c7a90);margin-top:12px;letter-spacing:.5px;}
+.stat-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px;}
+/* darker + blurred so the tiles read cleanly over the CCTV backdrop */
+.dstat{background:rgba(9,11,22,.66);border:1px solid rgba(255,211,42,.22);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  border-radius:8px;padding:14px 18px;min-width:120px;}
+.dstat b{display:block;font-family:'Lilita One',cursive;font-weight:400;font-size:clamp(24px,3vw,34px);
+  color:var(--file-gold);line-height:1;}
+.dstat span{display:block;font-size:11.5px;color:var(--cream-dim);margin-top:7px;line-height:1.35;max-width:20ch;}
+
+/* ==================== CHAPTER 8 — CLOSER + FOOTER ======================== */
+.closer{background:linear-gradient(180deg,#0b0e24,#070914);text-align:center;}
+.closer h2{max-width:18ch;margin:0 auto;}
+.closer p{color:var(--cream-dim);max-width:54ch;margin:16px auto 30px;font-size:clamp(15px,1.5vw,17px);line-height:1.65;}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.foot{background:#070914;border-top:1px solid rgba(255,255,255,.06);padding:44px clamp(20px,6vw,64px);}
+.foot-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:24px;flex-wrap:wrap;}
+.foot-left strong{color:var(--cream);font-weight:800;}
+.foot-left p{color:var(--cream-dim);font-size:13.5px;line-height:1.6;}
+.foot-dis{color:#6f6d84;font-size:12px;max-width:60ch;margin-top:8px;line-height:1.55;}
+.foot-links{display:flex;gap:22px;flex-wrap:wrap;}
+.foot-links a{font-size:13.5px;color:var(--cream-dim);font-weight:700;transition:color .15s;}
+.foot-links a:hover{color:var(--cream);}
+
+/* =============================== RESPONSIVE =============================== */
+@media (max-width:760px){
+  .hero-logo{width:min(440px,90vw);}
+  /* checkin: the pinned 16:9 scrub band is too short on a phone — collapse it to
+     a static, fully-lit stacked block (the house image, then the caption below) */
+  .checkin-wrap{height:auto;}
+  .checkin{position:static;height:auto;overflow:visible;--p:1;padding:7vh 0 5vh;}
+  .ci-stage{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:16/9;margin:0;}
+  .ci-leftscrim{display:none;}
+  .ci-caption{position:static;left:auto;top:auto;bottom:auto;max-width:none;
+    transform:none;opacity:1;padding:22px 20px 0;text-shadow:none;}
+  .ci-note{display:none;}                 /* the arrow needs desk-width room */
+  .rail{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .evidence{grid-template-columns:1fr;}
+  .dsec{grid-template-columns:1fr;gap:8px;}
+  .dlabel{padding-top:0;}
+  /* on a phone the monitors would sit under the text — flood the backdrop dark */
+  .dossier-bg::after{background:linear-gradient(180deg,rgba(7,9,20,.9),rgba(7,9,20,.82));}
+  .secret .inner{flex-direction:column-reverse;}
+  .secret-door{flex-basis:auto;max-width:320px;}
+}

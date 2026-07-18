@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0E24">
+<title>The BrawlHouse — A Brawl Stars GTM Concept · Tessa Kerk</title>
+<meta name="description" content="An interactive Starr Park employee housing experience: visit the Brawlers' rooms, uncover the lore, and piece together the mystery. A speculative Brawl Stars GTM concept by Tessa Kerk — with a working prototype and full strategy deck.">
+<meta name="author" content="Tessa Kerk">
+<link rel="canonical" href="https://brawlhouse.tessa-kerk.com/">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<!-- social share -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://brawlhouse.tessa-kerk.com/">
+<meta property="og:site_name" content="The BrawlHouse">
+<meta property="og:title" content="The BrawlHouse — A Brawl Stars GTM Concept">
+<meta property="og:description" content="Visit Starr Park's employee housing, talk to the Brawlers, uncover the lore, and unlock the Secret Room. A speculative GTM concept by Tessa Kerk.">
+<meta property="og:image" content="https://brawlhouse.tessa-kerk.com/assets/img/og-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A cutaway of the BrawlHouse at night — Gale's, Janet's and Griff's rooms lit up, Mr. P at the front desk, and a chained Secret Room door.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The BrawlHouse — A Brawl Stars GTM Concept">
+<meta name="twitter:description" content="Visit Starr Park's employee housing, talk to the Brawlers, uncover the lore, and unlock the Secret Room. A concept by Tessa Kerk.">
+<meta name="twitter:image" content="https://brawlhouse.tessa-kerk.com/assets/img/og-share.jpg">
+<!-- Progressive enhancement: scroll.js adds html.js once it wires up; without it
+     the pinned scenes collapse to composed frames (see html:not(.js) in site.css). -->
+<link rel="preload" as="image" href="assets/img/house.webp">
+<link rel="preload" as="image" href="assets/img/logo.webp">
+<link rel="stylesheet" href="css/site.css?v=7">
+<link rel="stylesheet" href="css/scrollbar.css?v=7">
+</head>
+<body>
+
+<!-- ===================== CHAPTER 1 — HERO (pinned) ===================== -->
+<section class="pin-wrap hero-wrap" data-scene data-static="0" aria-label="The BrawlHouse">
+  <div class="pin hero">
+    <img class="hero-bg" src="assets/img/house.webp" alt="" aria-hidden="true">
+    <div class="hero-scrim"></div>
+    <canvas class="hero-fx" id="hero-fx" aria-hidden="true"></canvas>
+
+    <div class="hero-content">
+      <img class="hero-logo" src="assets/img/logo.webp" alt="The BrawlHouse — Starr Park Employee Housing" width="1000" height="562">
+      <p class="hero-sub">Starr Park's night shift has clocked in — and the staff dorms are open to visitors. Wander the rooms, talk to the Brawlers, and work out <b>what Mr. P doesn't want you to find.</b></p>
+      <div class="hero-cta-row">
+        <a class="cta" href="https://brawlhouse.tessa-kerk.com/prototype.html" target="_blank" rel="noopener">▶&nbsp; Try the prototype</a>
+      </div>
+      <ul class="chips">
+        <li class="chip">No install · runs in your browser</li>
+        <li class="chip">4 residents on site</li>
+        <li class="chip">Prototype + full strategy deck</li>
+      </ul>
+    </div>
+
+    <div class="scrollcue">
+      <span class="cue-chevron"></span>
+      <span class="cue-label">Check in</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CHAPTER 2 — CHECK IN (room-by-room reveal) ============= -->
+<section class="pin-wrap checkin-wrap" data-scene data-static="1" aria-label="The house wakes up">
+  <div class="pin checkin">
+    <div class="ci-stage">
+      <img class="ci-house" src="assets/img/house.webp" width="1920" height="1080"
+           alt="A cutaway of the BrawlHouse at night — Gale's, Janet's and Griff's rooms upstairs, Mr. P at the front desk, and a chained Secret Room door." loading="lazy" decoding="async">
+      <div class="ci-night"></div>
+      <div class="ci-zone z-gale"></div>
+      <div class="ci-zone z-janet"></div>
+      <div class="ci-zone z-griff"></div>
+      <div class="ci-zone z-mrp"></div>
+      <div class="ci-zone z-secret"></div>
+
+      <div class="ci-note" aria-hidden="true">
+        <span class="margin-note">this door? staff only.<br>supposedly.</span>
+        <svg class="note-arrow" viewBox="0 0 72 58" preserveAspectRatio="xMidYMid meet">
+          <path class="na-line" d="M34 52 C 28 38, 44 24, 38 9"/>
+          <path class="na-head" d="M30 19 L38 6 L46 18"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ci-leftscrim"></div>
+    <div class="ci-caption">
+      <span class="eyebrow">Checking in</span>
+      <h2 class="display">Every room's<br>got a story</h2>
+      <p>The arena closes and the night shift clocks in. <b>Gale</b> mops. <b>Janet</b> rehearses. <b>Griff</b> counts the takings. And behind the desk, <b>Mr. P</b> watches everything.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 3 — MEET THE RESIDENTS ==================== -->
+<section class="chapter residents" aria-label="Meet the residents">
+  <div class="inner">
+    <div class="chead center">
+      <span class="eyebrow">Chapter three</span>
+      <h2 class="display">Meet the residents</h2>
+      <p>Four Brawlers are checked in this season. Each has their own room, their own personality — and their own piece of what's going on at Starr Labs.</p>
+    </div>
+    <div class="rail">
+      <figure class="res-card gale">
+        <img src="assets/img/rooms/gale.webp" alt="Gale's room — the park janitor's cluttered maintenance den" loading="lazy" decoding="async">
+        <figcaption class="res-body">
+          <div class="res-name">Gale</div>
+          <div class="res-role">Park Janitor</div>
+          <p class="res-line">"Forty years of maintenance. Lately that includes noting which deliveries don't appear on any manifest."</p>
+        </figcaption>
+      </figure>
+      <figure class="res-card janet">
+        <img src="assets/img/rooms/janet.webp" alt="Janet's room — the star performer's dressing room" loading="lazy" decoding="async">
+        <figcaption class="res-body">
+          <div class="res-name">Janet</div>
+          <div class="res-role">Star Performer</div>
+          <p class="res-line">"Living life like a spotlight! …why are you asking so many questions?"</p>
+        </figcaption>
+      </figure>
+      <figure class="res-card griff">
+        <img src="assets/img/rooms/griff.webp" alt="Griff's room — the gift shop mogul's stockroom" loading="lazy" decoding="async">
+        <figcaption class="res-body">
+          <div class="res-name">Griff</div>
+          <div class="res-role">Gift Shop Mogul</div>
+          <p class="res-line">"Global sales: 9,999,999. Best not to ask exactly what we're moving."</p>
+        </figcaption>
+      </figure>
+      <figure class="res-card mrp">
+        <img src="assets/img/rooms/mrp.webp" alt="Mr. P's front desk" loading="lazy" decoding="async">
+        <figcaption class="res-body">
+          <div class="res-name">Mr. P</div>
+          <div class="res-role">Manager · Front Desk</div>
+          <p class="res-line">"Smiling is mandatory. Questions about the back rooms are not encouraged."</p>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= CHAPTER 4 — THE MYSTERY ======================= -->
+<section class="chapter mystery" aria-label="No one has the whole story">
+  <div class="inner">
+    <div class="chead center">
+      <span class="eyebrow">Chapter four</span>
+      <h2 class="display">No one has the whole story</h2>
+      <p>Every resident knows a piece. None of them knows all of it. Talk to everyone, compare what they let slip, and the shape of what Starr Labs is <b>really</b> doing starts to come together — on Reddit, on Discord, in the theories.</p>
+    </div>
+    <div class="evidence">
+      <div class="efile">
+        <div class="etag"><span>File A</span><span>Clearance · Public</span></div>
+        <div class="ename">Maintenance form — partial access code</div>
+        <div class="ex">"…panel relocated to sub-level. Second half of the code filed under a different system. — G."</div>
+      </div>
+      <div class="efile">
+        <div class="etag"><span>File B</span><span>Clearance · Staff</span></div>
+        <div class="ename">Mr. P's Thursday duty roster</div>
+        <div class="ex">02:00 <span class="redact">–––––</span> gap. No notes. Loading bay unmanned ~90 seconds.</div>
+      </div>
+      <div class="efile">
+        <div class="etag"><span>File C</span><span>⚠ Eyes Only</span></div>
+        <div class="ename">Intercepted NanoStarr research memo</div>
+        <div class="ex">"Origin: Starr Park subsurface. Classification: <span class="redact">Level ▮</span>. Bioavailability: <span class="redact">▮▮.▮%</span>."</div>
+      </div>
+      <div class="efile">
+        <div class="etag"><span>File D</span><span>⚠ Redacted</span></div>
+        <div class="ename">Delivery manifest — Bay 4</div>
+        <div class="ex">Three entries <span class="redact">████████</span>. Signed off by <span class="redact">██████</span>, 1985.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 5 — THE SECRET ROOM ======================
+     Shows only the chained DOOR — never the interior. What's behind it is the
+     reveal players earn inside the prototype; the landing page must not spoil it. -->
+<section class="chapter secret" aria-label="The Secret Room">
+  <div class="inner">
+    <div class="secret-copy">
+      <span class="eyebrow">Chapter five</span>
+      <h2 class="display">One door nobody's meant to open</h2>
+      <p>There's a room in the BrawlHouse that stays chained shut. <b>Only the community can open it.</b> Each Super Creator gets one lore fragment — no two the same, no single one enough on its own. Pool the clues and the door gives. No brief needed: they've got something exclusive, their audience wants in, and the campaign runs itself. What's behind it? That's the part you have to find out for yourself.</p>
+    </div>
+    <figure class="secret-door">
+      <img src="assets/img/secret-door.webp" alt="A heavy door in the BrawlHouse wrapped in chains, marked 'Staff Only — Do Not Enter · Secret Room', glowing purple." loading="lazy" decoding="async">
+    </figure>
+  </div>
+</section>
+
+<!-- =================== CHAPTER 6 — TRY THE PROTOTYPE ==================== -->
+<section class="chapter proto" aria-label="Try the prototype">
+  <div class="inner proto-wrap">
+    <div class="proto-frame">
+      <div class="proto-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+      <img src="assets/img/rooms/janet.webp" alt="A room in the working prototype — a Brawler in their room, ready to talk" loading="lazy" decoding="async">
+    </div>
+    <div class="proto-copy">
+      <span class="eyebrow">Chapter six</span>
+      <h2 class="display">Built to show,<br>not just tell</h2>
+      <p>Rather than pitch it in slides, I built a working prototype: <b>four playable rooms</b> — Gale, Janet, Griff and Mr. P — each with their own personality and a piece of the mystery. Dialogue runs on a hand-written engine, not live AI, so the conversation stays responsive while the puzzle and guardrails stay exact.</p>
+      <a class="cta" href="https://brawlhouse.tessa-kerk.com/prototype.html" target="_blank" rel="noopener">▶&nbsp; Try the prototype</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================ CHAPTER 7 — BEHIND THE CONCEPT (dossier) ============= -->
+<section class="chapter dossier" aria-label="Behind the concept">
+  <!-- one continuous CCTV control-room backdrop behind all three rows, so the
+       whole strategic section is uniform (no odd image in the middle only) -->
+  <div class="dossier-bg" aria-hidden="true">
+    <img src="assets/img/cctv.webp" alt="" loading="lazy" decoding="async">
+  </div>
+  <div class="inner">
+    <div class="chead">
+      <span class="eyebrow">Behind the concept</span>
+      <h2 class="display">Why this works</h2>
+      <p>The game is the proof. Here's the thinking behind it — the gap it fills, the precedent it builds on, and what success would look like.</p>
+    </div>
+
+    <div class="dsec">
+      <div class="dlabel">The problem</div>
+      <div>
+        <h3>Engagement peaks for 72 hours, then falls back to baseline</h3>
+        <p>Brawl Stars ships a major update every 5–6 weeks. Each one is a marketing moment — Brawl Talk drops, creators post, the community reacts. By week two it's back at baseline. Players get the update information; they just don't get to <b>interact</b> with it. Nothing bridges the gap between cycles.</p>
+        <div class="stat-row">
+          <div class="dstat"><b>72h</b><span>Peak engagement after Brawl Talk</span></div>
+          <div class="dstat"><b>5–6 wks</b><span>Between major updates</span></div>
+          <div class="dstat"><b>$0</b><span>Organic hook in the gap</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dsec">
+      <div class="dlabel">The precedent</div>
+      <div>
+        <h3>Supercell has already proven the instinct</h3>
+        <p>For Brawl Stars' 5th anniversary, Supercell built an interactive Starr Park CCTV experience — hidden timecodes, unlockable story drops. It became the biggest organic engagement moment in the game's history. The BrawlHouse takes that same lore-discovery instinct and makes it <b>conversational, and repeatable every season</b>.</p>
+        <div class="stat-row">
+          <div class="dstat"><b>89M</b><span>Visits to the CCTV experience</span></div>
+          <div class="dstat"><b>8,500+</b><span>Organic YouTube videos</span></div>
+          <div class="dstat"><b>130M+</b><span>Views across creator content</span></div>
+          <div class="dstat"><b>$0</b><span>Media spend</span></div>
+        </div>
+        <p class="src">Source: Supercell published figures</p>
+      </div>
+    </div>
+
+    <div class="dsec">
+      <div class="dlabel">The target</div>
+      <div>
+        <h3>Benchmarked against the CCTV moment — but built to run every season</h3>
+        <p>A lower lift to build, designed to repeat rather than fire once. Targets set against the CCTV benchmark:</p>
+        <div class="stat-row">
+          <div class="dstat"><b>8M+</b><span>Unique visitors, first two weeks</span></div>
+          <div class="dstat"><b>25M+</b><span>Creator content views, launch week</span></div>
+          <div class="dstat"><b>5+ min</b><span>Average session, 8+ exchanges</span></div>
+          <div class="dstat"><b>40%+</b><span>Supercell ID login among interacting players</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 8 — CLOSER + FOOTER ====================== -->
+<section class="chapter closer" aria-label="The full picture">
+  <div class="inner">
+    <span class="eyebrow">The full strategy deck</span>
+    <h2 class="display">The complete picture</h2>
+    <p>The deck covers cross-team execution, the GTM timeline, in-game integration touchpoints, AI safety guardrails, the monetisation layer, and a phased prototype-to-launch roadmap.</p>
+    <div class="cta-row">
+      <a class="cta" href="https://brawlhouse.tessa-kerk.com/prototype.html" target="_blank" rel="noopener">▶&nbsp; Try the prototype</a>
+      <a class="cta amber" href="brawlhouse-deck.pdf" download="The BrawlHouse GTM Concept Deck.pdf">Request the full deck ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div class="foot-left">
+      <p><strong>Tessa Kerk</strong> · Creator Ecosystems &amp; Community Marketing</p>
+      <p class="foot-dis">A speculative GTM concept, not affiliated with or endorsed by Supercell. No Supercell code or art is used in the pitch; character likenesses are an affectionate homage to Brawl Stars.</p>
+    </div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="https://www.tessa-kerk.com">Portfolio</a>
+      <a href="https://www.tessa-kerk.com/projects">Projects</a>
+      <a href="https://linkedin.com/in/tessa-kerk" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://brawlhouse.tessa-kerk.com/prototype.html" target="_blank" rel="noopener">Try the demo</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="js/scroll.js?v=2"></script>
+<script src="js/scrollbar.js?v=2"></script>
+<script src="js/embers.js?v=2"></script>
+</body>
+</html>
