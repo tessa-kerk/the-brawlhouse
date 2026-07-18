@@ -1755,8 +1755,8 @@ let lastTopic = null;
 //  Spec: `AI Slice — Scope (18-07-2026).md`. The mock Supercell ID is theatre,
 //  not real auth (explicitly out of scope) — it's a client-side flag only.
 //  No login = the written engine below, completely unchanged. Logged in +
-//  a room in AI_ENABLED_ROOMS = that room's replies come from the Netlify
-//  Function instead. Fragment/secret-room detection stays deterministic and
+//  a room in AI_ENABLED_ROOMS = that room's replies come from the Cloudflare
+//  Pages Function instead. Fragment/secret-room detection stays deterministic and
 //  ALWAYS runs against the player's raw text, regardless of which reply path
 //  generated the response — that split is the whole safety story.
 // ════════════════════════════════════════
@@ -1793,11 +1793,12 @@ function scanArtefactTriggers(room, input) {
   }
 }
 
-// Calls the Netlify Function backend. Throws on any non-OK response so the
-// caller can fall back to the written engine rather than show a dead chat.
+// Calls the Cloudflare Pages Function backend (functions/api/brawler-chat.js).
+// Throws on any non-OK response so the caller can fall back to the written
+// engine rather than show a dead chat.
 async function getAIResponse(room, text) {
   const history = chatHistory[room] || [];
-  const res = await fetch('/.netlify/functions/brawler-chat', {
+  const res = await fetch('/api/brawler-chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ brawler: room, message: text, recentHistory: history.slice(-10) })
