@@ -5,10 +5,15 @@
  * Scope (18-07-2026).md`.
  *
  * Backend is Gemini (generativelanguage.googleapis.com), model
- * gemini-2.5-flash-lite — confirmed via ai.google.dev/gemini-api/docs/pricing
- * (18/07/2026) as the cheapest current chat-capable model: $0.10/$0.40 per 1M
- * input/output tokens, cheaper than gemini-3.1-flash-lite ($0.25/$1.50).
- * Stable, not deprecated (ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite).
+ * gemini-2.5-flash — chosen over the cheaper gemini-2.0-flash-lite (PM's call,
+ * 18/07/2026) for better instruction-following, in-character consistency, and
+ * jailbreak resistance for Gale; cost is negligible either way at this volume.
+ * PM independently confirmed both models are actually available on Tessa's
+ * key via models.list (200 OK) — earlier docs-research had turned up
+ * gemini-2.5-flash-lite / gemini-3.1-flash-lite as cheaper options, but those
+ * aren't visible on her key, so this build uses only what's confirmed present.
+ * Key is sent via the x-goog-api-key HEADER, not the ?key= query string
+ * (avoids putting a secret in a URL — confirmed at ai.google.dev/gemini-api/docs/api-key).
  *
  * Key lives in the Cloudflare Pages env var GEMINI_API_KEY (context.env, set
  * in the dashboard — never shipped to the browser, never typed in chat). The
@@ -22,7 +27,7 @@
  * Response: { reply: string, mock?: true }
  */
 
-const MODEL = 'gemini-2.5-flash-lite';
+const MODEL = 'gemini-2.5-flash';
 const MAX_OUTPUT_TOKENS = 300;
 const MAX_HISTORY_TURNS = 10;   // server-side trim, regardless of what the client sends
 const MAX_MESSAGE_CHARS = 600;  // cheap sanity cap — not the M3 rate limiter, just a backstop
@@ -145,10 +150,13 @@ export async function onRequest(context) {
     contents.push({ role: 'user', parts: [{ text: message }] });
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey, // header, not ?key= query string — keeps the secret out of any URL/logs
+        },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: brief }] },
           contents,
