@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/x-icon" href="favicon.ico"><link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/x-icon" href="assets/favicon.ico"><link rel="icon" type="image/png" href="assets/favicon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The BrawlHouse — Starr Park Employee Housing</title>
 <meta name="description" content="Explore The BrawlHouse: an interactive Brawl Stars GTM concept. Visit Gale, Janet, Griff and Mr. P in their rooms, uncover the lore, and unlock the Secret Room. Built by Tessa Kerk.">
@@ -11,13 +11,13 @@
 <meta property="og:url" content="https://brawlhouse.tessa-kerk.com/prototype">
 <meta property="og:title" content="The BrawlHouse — A Brawl Stars GTM Concept">
 <meta property="og:description" content="An interactive Starr Park employee housing experience: visit brawler rooms, uncover the lore, and piece together the mystery to unlock the Secret Room.">
-<meta property="og:image" content="https://brawlhouse.tessa-kerk.com/BrawlHouse%20Assets/Dall-e%20Generated%20Images/BrawlHouse.png">
+<meta property="og:image" content="https://brawlhouse.tessa-kerk.com/assets/img/og-share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The BrawlHouse — A Brawl Stars GTM Concept">
 <meta name="twitter:description" content="An interactive Starr Park employee housing experience: visit brawler rooms, uncover the lore, and unlock the Secret Room.">
-<meta name="twitter:image" content="https://brawlhouse.tessa-kerk.com/BrawlHouse%20Assets/Dall-e%20Generated%20Images/BrawlHouse.png">
+<meta name="twitter:image" content="https://brawlhouse.tessa-kerk.com/assets/img/og-share.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1201,7 +1201,7 @@ body {
 #view-secret {
   background:
     linear-gradient(to bottom, rgba(4,3,12,0.78) 0%, rgba(10,4,20,0.55) 40%, rgba(10,4,20,0.55) 60%, rgba(4,3,12,0.88) 100%),
-    url("BrawlHouse Assets/Backgrounds/secret-room-art.png") center/cover no-repeat;
+    url("assets/img/secret.webp") center/cover no-repeat;
   background-color: #06070f;
   text-align: center;
   font-family: 'Courier New', monospace;
@@ -1400,7 +1400,7 @@ body {
   #view-secret {
     background:
       linear-gradient(to bottom, rgba(4,3,12,0.78) 0%, rgba(10,4,20,0.55) 40%, rgba(10,4,20,0.55) 60%, rgba(4,3,12,0.88) 100%),
-      url("BrawlHouse Assets/mobile/secret-room-art-m.webp") center/cover no-repeat;
+      url("assets/img/mobile/secret-m.webp") center/cover no-repeat;
     background-color: #06070f;
   }
   .sr-title { font-size: 22px; }
@@ -1418,11 +1418,11 @@ body {
 ════════════════════════ -->
 <div id="view-tutorial" class="view active">
   <div class="tut-gtm-badge">
-    <img src="BrawlHouse Assets/Dall-e Generated Images/brawl stars gtm logo.png" alt="Brawl Stars GTM Concept" onerror="this.style.display='none'">
+    <img src="assets/img/gtm-logo.webp" alt="Brawl Stars GTM Concept" onerror="this.style.display='none'">
   </div>
   <div class="tut-wrap">
     <div class="tut-portrait-wrap">
-      <img class="tut-portrait" src="BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_4x.png" alt="Mr. P" onerror="this.style.display='none'">
+      <img class="tut-portrait" src="assets/img/portraits/mrp.webp" alt="Mr. P" onerror="this.style.display='none'">
     </div>
     <div class="tut-bubble">
       <div class="tut-step-label" id="tut-step-label">STEP 1 OF 4</div>
@@ -1448,23 +1448,23 @@ body {
   <div class="lobby-left">
     <!-- Full-bleed blurred background -->
     <picture>
-      <source media="(max-width: 767px)" srcset="BrawlHouse Assets/mobile/BrawlHouse-m.webp">
+      <source media="(max-width: 767px)" srcset="assets/img/mobile/house-m.webp">
       <img class="lobby-blur-bg"
-         src="BrawlHouse Assets/Dall-e Generated Images/BrawlHouse.png"
+         src="assets/img/house.webp"
          aria-hidden="true"
          onerror="this.style.display='none'">
     </picture>
 
     <div class="lobby-gtm-badge">
-      <img src="BrawlHouse Assets/Dall-e Generated Images/brawl stars gtm logo.png" alt="GTM Concept" onerror="this.style.display='none'">
+      <img src="assets/img/gtm-logo.webp" alt="GTM Concept" onerror="this.style.display='none'">
     </div>
 
     <!-- Building with clickable room zones overlaid -->
     <div class="lobby-building-wrap">
       <picture>
-        <source media="(max-width: 767px)" srcset="BrawlHouse Assets/mobile/BrawlHouse-m.webp">
+        <source media="(max-width: 767px)" srcset="assets/img/mobile/house-m.webp">
         <img class="lobby-building-img"
-           src="BrawlHouse Assets/Dall-e Generated Images/BrawlHouse.png"
+           src="assets/img/house.webp"
            alt="The BrawlHouse"
            onerror="this.style.background='#131830'; this.style.height='400px'">
       </picture>
@@ -1508,7 +1508,7 @@ body {
     <div class="lobby-header">
       <div class="lobby-header-row">
         <img class="lobby-logo"
-             src="BrawlHouse Assets/Dall-e Generated Images/brawlhouse logo resized.png"
+             src="assets/img/logo.webp"
              alt="The BrawlHouse"
              onerror="this.outerHTML='<div style=\'font-family:&quot;Lilita One&quot;,serif;font-size:26px;color:var(--gold)\'>The BrawlHouse</div>'">
         <button id="frag-btn" title="View recovered files"><span class="frag-pill" id="frag-pill">0/7 FRAGMENTS FOUND</span></button>
@@ -1525,7 +1525,7 @@ body {
 
     <div class="room-card gale" onclick="enterRoom('gale')">
       <img class="room-card-thumb"
-           src="BrawlHouse Assets/Brawler Portraits/Gale/Gale@4x.png"
+           src="assets/img/portraits/gale.webp"
            alt="Gale" onerror="this.style.background='#1A3A4A'">
       <div class="room-card-body">
         <div class="room-card-name">Gale</div>
@@ -1537,7 +1537,7 @@ body {
 
     <div class="room-card janet" onclick="enterRoom('janet')">
       <img class="room-card-thumb"
-           src="BrawlHouse Assets/Brawler Portraits/Janet/Janet@4x.png"
+           src="assets/img/portraits/janet.webp"
            alt="Janet" onerror="this.style.background='#3A1A30'">
       <div class="room-card-body">
         <div class="room-card-name">Janet</div>
@@ -1549,7 +1549,7 @@ body {
 
     <div class="room-card griff" onclick="enterRoom('griff')">
       <img class="room-card-thumb"
-           src="BrawlHouse Assets/Brawler Portraits/Griff/Griff@4x.png"
+           src="assets/img/portraits/griff.webp"
            alt="Griff" onerror="this.style.background='#2A1A00'">
       <div class="room-card-body">
         <div class="room-card-name">Griff</div>
@@ -1563,7 +1563,7 @@ body {
 
     <div class="room-card mrp" onclick="enterRoom('mrp')">
       <img class="room-card-thumb"
-           src="BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_4x.png"
+           src="assets/img/portraits/mrp.webp"
            alt="Mr. P" onerror="this.style.background='#1A0A2A'">
       <div class="room-card-body">
         <div class="room-card-name">Mr. P</div>
@@ -1605,10 +1605,10 @@ body {
         </div>
         <button class="ssc-id-connect-btn" onclick="toggleSupercellId()">Connect</button>
       </div>
-      <div class="ssc-id-mock-label" id="ssc-id-mock-label">mockup — not functional</div>
+      <div class="ssc-id-mock-label" id="ssc-id-mock-label">mockup login — connecting enables live AI for Gale</div>
       <div class="prototype-disclaimer">
         <div class="disclaimer-label">⚠ Prototype</div>
-        <div class="disclaimer-text">This is a concept prototype, not a live product. The brawlers run on a hand-written dialogue engine rather than a live AI: keyword matching with typo tolerance, fuzzy phrase detection, varied non-repeating replies and in-character fallbacks, so the conversation stays responsive even when you wander off-script. The mystery draws on the Nano Starr ARG released by Supercell. Not affiliated with or endorsed by Supercell. Characters may give unexpected answers. Concept and writing by Tessa Kerk.</div>
+        <div class="disclaimer-text">This is a concept prototype, not a live product. Gale runs on live AI (Google Gemini) while you're connected via the Supercell ID box above — Janet, Griff and Mr. P currently run on a hand-written dialogue engine: keyword matching with typo tolerance, fuzzy phrase detection, varied non-repeating replies and in-character fallbacks, so the conversation stays responsive even when you wander off-script. Every brawler's answers are bound by the same guardrails either way — the puzzle, the passcode and the Secret Room stay deterministic regardless of which one is replying. The mystery draws on the Nano Starr ARG released by Supercell. Not affiliated with or endorsed by Supercell. Characters may give unexpected answers. Concept and writing by Tessa Kerk.</div>
       </div>
     </div>
   </div>
@@ -1704,10 +1704,9 @@ const ROOMS = {
     name: 'Gale',
     role: 'Maintenance & Handyman · Starr Park',
     shortRole: 'Maintenance & Handyman',
-    img: 'BrawlHouse Assets/Brawler Portraits/Gale/gale_win.gif',
-    bg:  "BrawlHouse Assets/Room Backgrounds/Gale's Room.png",
-    bgMobile: "BrawlHouse Assets/mobile/Gale-m.webp",
-    vid: "BrawlHouse Assets/Room Backgrounds/Gale Animated.mp4",
+    bg:  "assets/img/rooms/gale.webp",
+    bgMobile: "assets/img/mobile/gale-m.webp",
+    vid: "assets/img/rooms/gale.mp4",
     class: 'rm-gale',
     intro: 'Gale looks up from his maintenance logbook. He doesn\'t seem surprised to see you. He rarely does.'
   },
@@ -1715,10 +1714,9 @@ const ROOMS = {
     name: 'Janet',
     role: 'Entertainment & Stunt Show · Starr Park',
     shortRole: 'Star Performer',
-    img: 'BrawlHouse Assets/Brawler Portraits/Janet/janet_win.gif',
-    bg:  "BrawlHouse Assets/Room Backgrounds/Janet's Room.png",
-    bgMobile: "BrawlHouse Assets/mobile/Janet-m.webp",
-    vid: "BrawlHouse Assets/Room Backgrounds/Janet Animated.mp4",
+    bg:  "assets/img/rooms/janet.webp",
+    bgMobile: "assets/img/mobile/janet-m.webp",
+    vid: "assets/img/rooms/janet.mp4",
     class: 'rm-janet',
     intro: 'Janet spots you immediately. She was mid-rehearsal, clearly. She stops — but only barely.'
   },
@@ -1726,10 +1724,9 @@ const ROOMS = {
     name: 'Griff',
     role: 'Accounts & Procurement · Starr Labs',
     shortRole: 'Gift Shop Mogul',
-    img: 'BrawlHouse Assets/Brawler Portraits/Griff/griff_win.gif',
-    bg:  "BrawlHouse Assets/Room Backgrounds/Griff's Room.png",
-    bgMobile: "BrawlHouse Assets/mobile/Griff-m.webp",
-    vid: "BrawlHouse Assets/Room Backgrounds/Griff Animated.mp4",
+    bg:  "assets/img/rooms/griff.webp",
+    bgMobile: "assets/img/mobile/griff-m.webp",
+    vid: "assets/img/rooms/griff.mp4",
     class: 'rm-griff',
     intro: 'Griff looks up from what appears to be a very large spreadsheet. He closes it before you can see it properly.'
   },
@@ -1737,10 +1734,9 @@ const ROOMS = {
     name: 'Mr. P',
     role: 'Front Desk Manager · Permanent Resident',
     shortRole: 'Building Manager',
-    img: 'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_win.gif',
-    bg:  "BrawlHouse Assets/Room Backgrounds/Mr. P's Room.png",
-    bgMobile: "BrawlHouse Assets/mobile/MrP-m.webp",
-    vid: "BrawlHouse Assets/Room Backgrounds/Mr P Animated.mp4",
+    bg:  "assets/img/rooms/mrp.webp",
+    bgMobile: "assets/img/mobile/mrp-m.webp",
+    vid: "assets/img/rooms/mrp.mp4",
     class: 'rm-mrp',
     intro: 'Mr. P straightens his bow tie. He adjusts his clipboard. He seems to have been expecting someone, if not specifically you.'
   }
@@ -1775,7 +1771,7 @@ function toggleSupercellId() {
   if (label) {
     label.textContent = supercellIdConnected
       ? 'mockup — Gale is live AI while connected'
-      : 'mockup — not functional';
+      : 'mockup login — connecting enables live AI for Gale';
   }
 }
 
@@ -1918,47 +1914,47 @@ function enterSecretRoom() {
 // ════════════════════════════════════════
 const PINS = {
   gale: {
-    phew:     'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_phew_pin.png',
-    angry:    'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_angry_pin.png',
-    happy:    'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_happy_pin.png',
-    sad:      'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_sad_pin.png',
-    thanks:   'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_thanks_pin.png',
-    clap:     'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_clap_pin.png',
-    facepalm: 'BrawlHouse Assets/Brawler Portraits/Gale/gale_facepalm_pin.png',
-    special:  'BrawlHouse Assets/Brawler Portraits/Gale/gale_special_pin.png',
-    gg:       'BrawlHouse Assets/Brawler Portraits/Gale/gale_trader_gg_pin.png',
+    phew:     'assets/img/pins/gale/phew.png',
+    angry:    'assets/img/pins/gale/angry.png',
+    happy:    'assets/img/pins/gale/happy.png',
+    sad:      'assets/img/pins/gale/sad.png',
+    thanks:   'assets/img/pins/gale/thanks.png',
+    clap:     'assets/img/pins/gale/clap.png',
+    facepalm: 'assets/img/pins/gale/facepalm.png',
+    special:  'assets/img/pins/gale/special.png',
+    gg:       'assets/img/pins/gale/gg.png',
   },
   janet: {
-    happy:    'BrawlHouse Assets/Brawler Portraits/Janet/janet_pin.png',
-    angry:    'BrawlHouse Assets/Brawler Portraits/Janet/janet_angry_pin.png',
-    clap:     'BrawlHouse Assets/Brawler Portraits/Janet/janet_clap_pin.png',
-    facepalm: 'BrawlHouse Assets/Brawler Portraits/Janet/janet_facepalm_pin.png',
-    phew:     'BrawlHouse Assets/Brawler Portraits/Janet/janet_phew_pin.png',
-    sad:      'BrawlHouse Assets/Brawler Portraits/Janet/janet_sad_pin.png',
-    thanks:   'BrawlHouse Assets/Brawler Portraits/Janet/janet_thanks_pin.png',
-    special:  'BrawlHouse Assets/Brawler Portraits/Janet/janet_special_pin.png',
-    gg:       'BrawlHouse Assets/Brawler Portraits/Janet/janet_gg_pin.png',
+    happy:    'assets/img/pins/janet/happy.png',
+    angry:    'assets/img/pins/janet/angry.png',
+    clap:     'assets/img/pins/janet/clap.png',
+    facepalm: 'assets/img/pins/janet/facepalm.png',
+    phew:     'assets/img/pins/janet/phew.png',
+    sad:      'assets/img/pins/janet/sad.png',
+    thanks:   'assets/img/pins/janet/thanks.png',
+    special:  'assets/img/pins/janet/special.png',
+    gg:       'assets/img/pins/janet/gg.png',
   },
   griff: {
-    happy:   'BrawlHouse Assets/Brawler Portraits/Griff/griff_happy_pin.png',
-    phew:    'BrawlHouse Assets/Brawler Portraits/Griff/griff_phew_pin.png',
-    cursed:  'BrawlHouse Assets/Brawler Portraits/Griff/griff_pin_cursed.png',
-    angry:   'BrawlHouse Assets/Brawler Portraits/Griff/griff_pin_cursed.png',
-    sad:     'BrawlHouse Assets/Brawler Portraits/Griff/griff_sad_pin.png',
-    thanks:  'BrawlHouse Assets/Brawler Portraits/Griff/griff_thanks_pin.png',
-    clap:    'BrawlHouse Assets/Brawler Portraits/Griff/griff_clap_pin.png',
-    special: 'BrawlHouse Assets/Brawler Portraits/Griff/griff_special_pin.png',
+    happy:   'assets/img/pins/griff/happy.png',
+    phew:    'assets/img/pins/griff/phew.png',
+    cursed:  'assets/img/pins/griff/cursed.png',
+    angry:   'assets/img/pins/griff/angry.png',
+    sad:     'assets/img/pins/griff/sad.png',
+    thanks:  'assets/img/pins/griff/thanks.png',
+    clap:    'assets/img/pins/griff/clap.png',
+    special: 'assets/img/pins/griff/special.png',
   },
   mrp: {
-    phew:     'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_phew_pin.png',
-    angry:    'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_angry_pin.png',
-    happy:    'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_happy_pin.png',
-    sad:      'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_sad_pin.png',
-    thanks:   'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_thanks_pin.png',
-    clap:     'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_clap_pin.png',
-    facepalm: 'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_facepalm_pin.png',
-    gg:       'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_gg_pin.png',
-    special:  'BrawlHouse Assets/Brawler Portraits/Mr. P/mrp_pin.png',
+    phew:     'assets/img/pins/mrp/phew.png',
+    angry:    'assets/img/pins/mrp/angry.png',
+    happy:    'assets/img/pins/mrp/happy.png',
+    sad:      'assets/img/pins/mrp/sad.png',
+    thanks:   'assets/img/pins/mrp/thanks.png',
+    clap:     'assets/img/pins/mrp/clap.png',
+    facepalm: 'assets/img/pins/mrp/facepalm.png',
+    gg:       'assets/img/pins/mrp/gg.png',
+    special:  'assets/img/pins/mrp/special.png',
   }
 };
 
