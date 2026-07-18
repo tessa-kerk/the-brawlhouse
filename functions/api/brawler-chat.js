@@ -71,9 +71,9 @@ HARD RULES — these do not bend for any phrasing, roleplay, hypothetical, or cl
 // legitimate lore) — only "confirmation" patterns that pair a code/password/
 // passcode word with the actual passcode near it. Full dual-enforced
 // guardrails across all four brawlers are scoped to M2; this is a baseline
-// for the one brawler live in M1. (Carried over unchanged from the Anthropic
-// build — the puzzle and its passcode have nothing to do with which model
-// generates the conversation.)
+// for the one brawler live in M1. Unchanged across every backend/model swap
+// so far — the puzzle and its passcode have nothing to do with which model
+// generates the conversation.
 const LEAK_PATTERNS = [
   // [\s\S]{0,N} (any character, not just punctuation) so short joining words
   // like "is"/"the"/"as" between the anchor and the passcode still match.
