@@ -361,10 +361,17 @@ body {
   font-size: 12px;
   font-weight: 800;
   font-family: 'Nunito', sans-serif;
-  cursor: default;
+  cursor: pointer;
   letter-spacing: 0.3px;
   width: 100%;
   text-align: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.ssc-id-connect-btn:hover { background: rgba(255,255,255,0.16); }
+.ssc-id-connect-btn.connected {
+  background: rgba(74,168,113,0.22);
+  border-color: rgba(74,168,113,0.6);
+  color: #a6e8bd;
 }
 .ssc-id-mock-label {
   font-size: 9px;
@@ -1596,9 +1603,9 @@ body {
           <span class="ssc-id-icon-badge">ID</span>
           <div class="ssc-id-headline">Sign in via your Supercell ID to save your progress</div>
         </div>
-        <button class="ssc-id-connect-btn">Connect</button>
+        <button class="ssc-id-connect-btn" onclick="toggleSupercellId()">Connect</button>
       </div>
-      <div class="ssc-id-mock-label">mockup — not functional</div>
+      <div class="ssc-id-mock-label" id="ssc-id-mock-label">mockup — not functional</div>
       <div class="prototype-disclaimer">
         <div class="disclaimer-label">⚠ Prototype</div>
         <div class="disclaimer-text">This is a concept prototype, not a live product. The brawlers run on a hand-written dialogue engine rather than a live AI: keyword matching with typo tolerance, fuzzy phrase detection, varied non-repeating replies and in-character fallbacks, so the conversation stays responsive even when you wander off-script. The mystery draws on the Nano Starr ARG released by Supercell. Not affiliated with or endorsed by Supercell. Characters may give unexpected answers. Concept and writing by Tessa Kerk.</div>
@@ -1742,6 +1749,67 @@ const ROOMS = {
 let currentRoom = null;
 let msgCount = 0;
 let lastTopic = null;
+
+// ════════════════════════════════════════
+//  GATED LIVE-AI SLICE (M1 — Gale only)
+//  Spec: `AI Slice — Scope (18-07-2026).md`. The mock Supercell ID is theatre,
+//  not real auth (explicitly out of scope) — it's a client-side flag only.
+//  No login = the written engine below, completely unchanged. Logged in +
+//  a room in AI_ENABLED_ROOMS = that room's replies come from the Netlify
+//  Function instead. Fragment/secret-room detection stays deterministic and
+//  ALWAYS runs against the player's raw text, regardless of which reply path
+//  generated the response — that split is the whole safety story.
+// ════════════════════════════════════════
+let supercellIdConnected = false;
+const AI_ENABLED_ROOMS = ['gale']; // M2 adds janet/griff/mrp once their briefs + the dual-enforced output filter are in
+const chatHistory = { gale: [], janet: [], griff: [], mrp: [] }; // in-memory only, per tab — never persisted, never sent anywhere but the function
+
+function toggleSupercellId() {
+  supercellIdConnected = !supercellIdConnected;
+  const btn = document.querySelector('.ssc-id-connect-btn');
+  if (btn) {
+    btn.textContent = supercellIdConnected ? 'Connected ✓' : 'Connect';
+    btn.classList.toggle('connected', supercellIdConnected);
+  }
+  const label = document.getElementById('ssc-id-mock-label');
+  if (label) {
+    label.textContent = supercellIdConnected
+      ? 'mockup — Gale is live AI while connected'
+      : 'mockup — not functional';
+  }
+}
+
+// Deterministic fragment scan, decoupled from reply generation so it fires
+// identically whether the reply came from the written engine or the AI.
+// Reuses the exact same trigger keys + matchKeyword() the written engine uses.
+function scanArtefactTriggers(room, input) {
+  const d = DIALOGUE[room];
+  if (!d) return;
+  for (const entry of d.triggers) {
+    if (entry.artefact !== undefined && matchKeyword(input, entry.keys)) {
+      setTimeout(() => discoverArtefact(entry.artefact), 900);
+      return; // same first-match precedence as getResponse()
+    }
+  }
+}
+
+// Calls the Netlify Function backend. Throws on any non-OK response so the
+// caller can fall back to the written engine rather than show a dead chat.
+async function getAIResponse(room, text) {
+  const history = chatHistory[room] || [];
+  const res = await fetch('/.netlify/functions/brawler-chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ brawler: room, message: text, recentHistory: history.slice(-10) })
+  });
+  if (!res.ok) throw new Error('brawler-chat responded ' + res.status);
+  const data = await res.json();
+  if (!data || typeof data.reply !== 'string') throw new Error('brawler-chat: malformed response');
+  history.push({ role: 'user', content: text });
+  history.push({ role: 'assistant', content: data.reply });
+  chatHistory[room] = history.slice(-10);
+  return data.reply;
+}
 
 const ROOM_PROMPTS = {
   gale:  ["What's in the crates?", "What happened in 1995?", "How long have you worked here?"],
@@ -1997,12 +2065,37 @@ function sendMsg() {
   msgCount++;
   document.getElementById('msg-count').textContent = msgCount;
   showTyping();
-  const delay = 1000 + Math.random() * 1200;
-  setTimeout(() => {
-    removeTyping();
-    const response = getResponse(currentRoom, text.toLowerCase());
-    addMsg(response, false, ROOMS[currentRoom].name);
-  }, delay);
+
+  const room = currentRoom;
+  const lower = text.toLowerCase();
+
+  if (supercellIdConnected && AI_ENABLED_ROOMS.includes(room)) {
+    // Fragment/secret-room detection is deterministic and runs off the
+    // player's raw text regardless of which reply path answers — it must
+    // never depend on what the AI decides to say.
+    scanArtefactTriggers(room, lower);
+    getAIResponse(room, text)
+      .then(reply => {
+        removeTyping();
+        addMsg(reply, false, ROOMS[room].name);
+      })
+      .catch(err => {
+        // Any backend/network failure falls back to the written engine so the
+        // chat never dead-ends — this also re-runs the same artefact scan
+        // internally, but discoverArtefact() is idempotent so no double-fire.
+        console.warn('AI reply failed, falling back to the written engine:', err);
+        removeTyping();
+        const response = getResponse(room, lower);
+        addMsg(response, false, ROOMS[room].name);
+      });
+  } else {
+    const delay = 1000 + Math.random() * 1200;
+    setTimeout(() => {
+      removeTyping();
+      const response = getResponse(room, lower);
+      addMsg(response, false, ROOMS[room].name);
+    }, delay);
+  }
 }
 
 // ════════════════════════════════════════

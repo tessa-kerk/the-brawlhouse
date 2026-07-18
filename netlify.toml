@@ -1,0 +1,13 @@
+# The BrawlHouse — Netlify config.
+# The site itself is still a plain static folder (no build step). This file
+# only exists to declare the Functions directory + pin a Node runtime with
+# native fetch (used by netlify/functions/brawler-chat.js — no dependencies,
+# no package.json, nothing to npm install).
+[build]
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[build.environment]
+  NODE_VERSION = "20"
