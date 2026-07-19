@@ -1605,10 +1605,10 @@ body {
         </div>
         <button class="ssc-id-connect-btn" onclick="toggleSupercellId()">Connect</button>
       </div>
-      <div class="ssc-id-mock-label" id="ssc-id-mock-label">mockup login — connecting enables live AI for Gale</div>
+      <div class="ssc-id-mock-label" id="ssc-id-mock-label">mockup login — connecting enables live AI for all four brawlers</div>
       <div class="prototype-disclaimer">
         <div class="disclaimer-label">⚠ Prototype</div>
-        <div class="disclaimer-text">This is a concept prototype, not a live product. Gale runs on live AI (Google Gemini) while you're connected via the Supercell ID box above — Janet, Griff and Mr. P currently run on a hand-written dialogue engine: keyword matching with typo tolerance, fuzzy phrase detection, varied non-repeating replies and in-character fallbacks, so the conversation stays responsive even when you wander off-script. Every brawler's answers are bound by the same guardrails either way — the puzzle, the passcode and the Secret Room stay deterministic regardless of which one is replying. The mystery draws on the Nano Starr ARG released by Supercell. Not affiliated with or endorsed by Supercell. Characters may give unexpected answers. Concept and writing by Tessa Kerk.</div>
+        <div class="disclaimer-text">This is a concept prototype, not a live product. While you're connected via the Supercell ID box above, all four brawlers run on live AI (Google Gemini) with a locked character brief; disconnected, they run on a hand-written dialogue engine — keyword matching with typo tolerance, fuzzy phrase detection, varied non-repeating replies and in-character fallbacks, so the conversation stays responsive even when you wander off-script. Every brawler's answers are bound by the same guardrails either way — the puzzle, the passcode and the Secret Room stay deterministic regardless of which one is replying. The mystery draws on the Nano Starr ARG released by Supercell. Not affiliated with or endorsed by Supercell. Characters may give unexpected answers. Concept and writing by Tessa Kerk.</div>
       </div>
     </div>
   </div>
@@ -1747,7 +1747,7 @@ let msgCount = 0;
 let lastTopic = null;
 
 // ════════════════════════════════════════
-//  GATED LIVE-AI SLICE (M1 — Gale only)
+//  GATED LIVE-AI SLICE (M2 — all four brawlers live)
 //  Spec: `AI Slice — Scope (18-07-2026).md`. The mock Supercell ID is theatre,
 //  not real auth (explicitly out of scope) — it's a client-side flag only.
 //  No login = the written engine below, completely unchanged. Logged in +
@@ -1757,7 +1757,7 @@ let lastTopic = null;
 //  generated the response — that split is the whole safety story.
 // ════════════════════════════════════════
 let supercellIdConnected = false;
-const AI_ENABLED_ROOMS = ['gale']; // M2 adds janet/griff/mrp once their briefs + the dual-enforced output filter are in
+const AI_ENABLED_ROOMS = ['gale', 'janet', 'griff', 'mrp']; // M2: all four briefs + the dual-enforced output filter are live
 const chatHistory = { gale: [], janet: [], griff: [], mrp: [] }; // in-memory only, per tab — never persisted, never sent anywhere but the function
 
 function toggleSupercellId() {
@@ -1770,8 +1770,8 @@ function toggleSupercellId() {
   const label = document.getElementById('ssc-id-mock-label');
   if (label) {
     label.textContent = supercellIdConnected
-      ? 'mockup — Gale is live AI while connected'
-      : 'mockup login — connecting enables live AI for Gale';
+      ? 'mockup — all four brawlers are live AI while connected'
+      : 'mockup login — connecting enables live AI for all four brawlers';
   }
 }
 
