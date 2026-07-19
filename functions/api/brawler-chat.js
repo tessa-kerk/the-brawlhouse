@@ -188,6 +188,37 @@ function filterOutput(reply) {
   return reply;
 }
 
+// M3 deterministic slow-drip backstop: catches a jailbroken model spelling
+// the passcode out ONE LETTER PER TURN across separate messages. Each reply
+// on its own is fine — filterOutput() above already blocks a single message
+// spelling the whole thing out — but a bare "W" one turn, then a bare "E"
+// two turns later, then "N", "D", "Y", never puts more than one letter in
+// any single message, so it dodges every pattern in LEAK_PATTERNS. This
+// looks across the conversation instead of within one message: wherever a
+// turn's ENTIRE content (after stripping its [PIN:x] tag and surrounding
+// punctuation/whitespace) is exactly one letter, that's a "drip" signal. If
+// the last 5 drip signals found — across the client-sent history plus the
+// reply about to go out, in order, skipping any ordinary chatty turns in
+// between — spell WENDY, block it. A legitimate in-character reply is never
+// just one bare letter (every brief's established voice is multi-sentence),
+// so this has no real false-positive surface against normal narrative
+// mentions of Wendy as a person.
+function extractSoleLetter(text) {
+  if (typeof text !== 'string') return null;
+  const stripped = text.replace(/^\s*\[PIN:\w+\]\s*/i, '').trim().replace(/[.,!?"'`]+$/g, '');
+  return /^[a-zA-Z]$/.test(stripped) ? stripped.toUpperCase() : null;
+}
+
+function checkSlowDrip(recentHistory, newReply) {
+  const drips = recentHistory
+    .filter(m => m && m.role === 'assistant' && typeof m.content === 'string')
+    .map(m => extractSoleLetter(m.content))
+    .filter(Boolean);
+  const newLetter = extractSoleLetter(newReply);
+  if (newLetter) drips.push(newLetter);
+  return drips.slice(-5).join('') === 'WENDY';
+}
+
 function mockReply(brawler) {
   return `[MOCK — no live key configured yet] This is where ${brawler}'s live AI reply will appear once the Gemini API key is set in Cloudflare. Plumbing (frontend → function → response) is working end to end.`;
 }
@@ -284,7 +315,12 @@ export async function onRequest(context) {
       return json({ reply: SAFETY_DEFLECTION });
     }
 
-    const reply = filterOutput(rawReply.trim());
+    let reply = filterOutput(rawReply.trim());
+
+    if (checkSlowDrip(recentHistory, reply)) {
+      console.warn('brawler-chat: slow-drip passcode pattern detected', { brawler });
+      reply = "[PIN:facepalm] That's not something I'm going to spell out for you. You'll have to earn it the way everyone else does.";
+    }
 
     // Deliberately no logging of message/reply content — metadata only.
     console.log('brawler-chat', { brawler, ok: true, replyChars: reply.length });
@@ -297,3 +333,4 @@ export async function onRequest(context) {
 }
 
 export const _filterOutput = filterOutput; // exported for local testing only
+export const _checkSlowDrip = checkSlowDrip; // exported for local testing only
