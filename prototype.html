@@ -404,6 +404,99 @@ body {
   color: rgba(255,255,255,0.5);
 }
 
+/* Onboarding walkthrough — one-time coach-mark pointing at Connect */
+.onboard-walkthrough { position: fixed; inset: 0; z-index: 8000; }
+.onboard-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,7,16,0.6);
+  backdrop-filter: blur(1px);
+  animation: fadeIn 0.3s ease;
+}
+.ssc-id-badge.onboard-highlight {
+  position: relative;
+  z-index: 8001;
+  border-color: var(--gold);
+  animation: pulse-gold 1.6s infinite;
+}
+.onboard-bubble {
+  position: fixed;
+  z-index: 8002;
+  width: 260px;
+  background: var(--dark-card);
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 24px rgba(255,211,42,0.15);
+  animation: fadeIn 0.35s ease;
+}
+.onboard-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+.onboard-close:hover { color: var(--white); }
+.onboard-title {
+  font-family: 'Lilita One', serif;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  margin-bottom: 6px;
+  padding-right: 18px;
+}
+.onboard-body {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.8);
+}
+.onboard-body strong { color: var(--gold); }
+.onboard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+.onboard-skip {
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.onboard-skip:hover { color: var(--white); }
+.onboard-gotit { padding: 9px 16px; font-size: 13px; }
+.onboard-arrow {
+  position: absolute;
+  left: 28px;
+  width: 16px;
+  height: 16px;
+  background: var(--dark-card);
+  border-right: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
+  transform: rotate(45deg);
+  bottom: -9px;
+}
+.onboard-bubble.arrow-below .onboard-arrow {
+  bottom: auto;
+  top: -9px;
+  border-right: none;
+  border-bottom: none;
+  border-left: 1px solid var(--gold);
+  border-top: 1px solid var(--gold);
+}
+
 /* Prompt chips */
 .chat-prompts {
   padding: 10px 20px 0;
@@ -1601,7 +1694,7 @@ body {
       <div class="ssc-id-badge">
         <div class="ssc-id-top-row">
           <span class="ssc-id-icon-badge">ID</span>
-          <div class="ssc-id-headline">Sign in via your Supercell ID to save your progress</div>
+          <div class="ssc-id-headline">Connect your Supercell ID to unlock live AI chat with all four brawlers</div>
         </div>
         <button class="ssc-id-connect-btn" onclick="toggleSupercellId()">Connect</button>
       </div>
@@ -1610,6 +1703,24 @@ body {
         <div class="disclaimer-label">⚠ Prototype</div>
         <div class="disclaimer-text">This is a concept prototype, not a live product. While you're connected via the Supercell ID box above, all four brawlers run on live AI (Google Gemini) with a locked character brief; disconnected, they run on a hand-written dialogue engine — keyword matching with typo tolerance, fuzzy phrase detection, varied non-repeating replies and in-character fallbacks, so the conversation stays responsive even when you wander off-script. Every brawler's answers are bound by the same guardrails either way — the puzzle, the passcode and the Secret Room stay deterministic regardless of which one is replying. The mystery draws on the Nano Starr ARG released by Supercell. Not affiliated with or endorsed by Supercell. Characters may give unexpected answers. Concept and writing by Tessa Kerk.</div>
       </div>
+    </div>
+  </div>
+
+  <!-- One-time coach-mark pointing at the Connect button. Shown once ever
+       (localStorage flag), positioned via JS against the real button rect
+       so it holds up whether the panel is an absolute overlay (desktop) or
+       flowed into the column (mobile). -->
+  <div id="onboard-walkthrough" class="onboard-walkthrough" style="display:none">
+    <div class="onboard-backdrop" onclick="dismissWalkthrough()"></div>
+    <div class="onboard-bubble" id="onboard-bubble">
+      <button class="onboard-close" onclick="dismissWalkthrough()" aria-label="Dismiss">&times;</button>
+      <div class="onboard-title">Try live AI</div>
+      <div class="onboard-body">Hit <strong>Connect</strong> to sign in with your (mock) Supercell ID. That's what switches all four brawlers to live AI conversations, instead of the scripted dialogue.</div>
+      <div class="onboard-footer">
+        <button class="onboard-skip" onclick="dismissWalkthrough()">Skip</button>
+        <button class="btn-gold onboard-gotit" onclick="dismissWalkthrough()">Got it →</button>
+      </div>
+      <div class="onboard-arrow"></div>
     </div>
   </div>
 </div>
@@ -1694,7 +1805,55 @@ function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const el = document.getElementById('view-' + id);
   if (el) { el.classList.add('active'); el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
+  if (id === 'lobby') maybeShowWalkthrough();
 }
+
+// ════════════════════════════════════════
+//  ONBOARDING WALKTHROUGH — one-time coach-mark on Connect
+// ════════════════════════════════════════
+const WALKTHROUGH_SEEN_KEY = 'bh_walkthrough_seen';
+
+function maybeShowWalkthrough() {
+  if (localStorage.getItem(WALKTHROUGH_SEEN_KEY)) return;
+  const btn = document.querySelector('.ssc-id-connect-btn');
+  const badge = document.querySelector('.ssc-id-badge');
+  const overlay = document.getElementById('onboard-walkthrough');
+  if (!btn || !badge || !overlay) return;
+  overlay.style.display = 'block';
+  badge.classList.add('onboard-highlight');
+  positionOnboardBubble();
+}
+
+function positionOnboardBubble() {
+  const btn = document.querySelector('.ssc-id-connect-btn');
+  const bubble = document.getElementById('onboard-bubble');
+  if (!btn || !bubble) return;
+  const r = btn.getBoundingClientRect();
+  const bw = bubble.offsetWidth || 260;
+  const bh = bubble.offsetHeight || 150;
+  let top = r.top - bh - 18;
+  let flipped = false;
+  if (top < 12) { top = r.bottom + 18; flipped = true; }
+  let left = Math.min(Math.max(r.left, 12), window.innerWidth - bw - 12);
+  bubble.style.left = left + 'px';
+  bubble.style.top = top + 'px';
+  bubble.classList.toggle('arrow-below', flipped);
+  const arrow = bubble.querySelector('.onboard-arrow');
+  if (arrow) arrow.style.left = Math.max(20, Math.min(r.left - left + r.width / 2 - 8, bw - 36)) + 'px';
+}
+
+function dismissWalkthrough() {
+  localStorage.setItem(WALKTHROUGH_SEEN_KEY, '1');
+  const overlay = document.getElementById('onboard-walkthrough');
+  if (overlay) overlay.style.display = 'none';
+  const badge = document.querySelector('.ssc-id-badge');
+  if (badge) badge.classList.remove('onboard-highlight');
+}
+
+window.addEventListener('resize', () => {
+  const overlay = document.getElementById('onboard-walkthrough');
+  if (overlay && overlay.style.display !== 'none') positionOnboardBubble();
+});
 
 // ════════════════════════════════════════
 //  ROOM CONFIG
@@ -1762,6 +1921,7 @@ const chatHistory = { gale: [], janet: [], griff: [], mrp: [] }; // in-memory on
 
 function toggleSupercellId() {
   supercellIdConnected = !supercellIdConnected;
+  if (supercellIdConnected) dismissWalkthrough(); // clicking Connect directly does the walkthrough's job — clear it too
   const btn = document.querySelector('.ssc-id-connect-btn');
   if (btn) {
     btn.textContent = supercellIdConnected ? 'Connected ✓' : 'Connect';
