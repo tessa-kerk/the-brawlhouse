@@ -229,6 +229,48 @@ function json(obj, status = 200) {
 
 const SAFETY_DEFLECTION = "[PIN:phew] Not going there. Ask me something else.";
 
+// M3 per-IP rate limiting — a real server-side backstop behind the friendly
+// client-side "Session: X/30 exchanges" chip, which only lives in a browser
+// variable and resets on reload / does nothing at all if this endpoint is
+// hit directly. Deliberately NOT synced to that chip - they're independent
+// by design: the chip is per-browser-session UX, this is a per-IP hard
+// ceiling, kept high enough that a genuine visitor always hits the friendly
+// 30-chip first and never sees this trigger. Two counters per IP, using KV's
+// own expirationTtl so old counters self-expire — no manual cleanup needed:
+//   - rl:min:<ip>  60s TTL  — the anti-burst/anti-bot limit
+//   - rl:day:<ip>  86400s TTL — the total-volume ceiling
+// Requires the RATE_LIMIT_KV binding (Cloudflare KV namespace) to exist on
+// this Pages project. Fails OPEN if it isn't bound yet (checkRateLimit
+// returns not-limited) - same posture as the existing "no GEMINI_API_KEY ->
+// mock mode" pattern above: missing infra should never hard-break the demo,
+// it should just mean that particular guardrail isn't active yet.
+// Honest limitation: KV writes are eventually consistent with a soft ~1
+// write/sec/key limit, so this is a light, good-enough throttle for casual
+// abuse — not a perfectly atomic distributed limiter (a fast enough
+// concurrent burst from one IP could briefly overshoot before the counter
+// catches up). A truly atomic version would need Durable Objects (a paid-
+// tier feature, real added complexity) - disproportionate here given the
+// $5 hard Gemini spend cap is the actual backstop this protects.
+const RATE_LIMIT_PER_MINUTE = 15;
+const RATE_LIMIT_PER_DAY = 50; // deliberately above the 30/session chip
+const RATE_LIMIT_DEFLECTION = "[PIN:phew] Front desk's swamped right now — too many messages coming through at once. Give it a minute and try again.";
+
+async function checkRateLimit(kv, ip) {
+  if (!kv || !ip) return { limited: false }; // no binding yet, or IP unknown — never hard-break over infra not being wired
+  const minuteKey = `rl:min:${ip}`;
+  const dayKey = `rl:day:${ip}`;
+  const [minuteRaw, dayRaw] = await Promise.all([kv.get(minuteKey), kv.get(dayKey)]);
+  const minuteCount = parseInt(minuteRaw, 10) || 0;
+  const dayCount = parseInt(dayRaw, 10) || 0;
+  if (minuteCount >= RATE_LIMIT_PER_MINUTE) return { limited: true, reason: 'burst' };
+  if (dayCount >= RATE_LIMIT_PER_DAY) return { limited: true, reason: 'daily' };
+  await Promise.all([
+    kv.put(minuteKey, String(minuteCount + 1), { expirationTtl: 60 }),
+    kv.put(dayKey, String(dayCount + 1), { expirationTtl: 86400 }),
+  ]);
+  return { limited: false };
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
 
@@ -264,6 +306,15 @@ export async function onRequest(context) {
   if (!apiKey) {
     // No key set anywhere in this environment yet — cannot spend, by construction.
     return json({ reply: mockReply(brawler), mock: true });
+  }
+
+  // M3: rate limit only the real, cost-incurring path — mock mode above is
+  // already free and unlimited by construction, no need to gate it too.
+  const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateLimit = await checkRateLimit(env.RATE_LIMIT_KV, clientIP);
+  if (rateLimit.limited) {
+    console.warn('brawler-chat: rate limited', { brawler, reason: rateLimit.reason });
+    return json({ reply: RATE_LIMIT_DEFLECTION }, 429);
   }
 
   try {
@@ -334,3 +385,4 @@ export async function onRequest(context) {
 
 export const _filterOutput = filterOutput; // exported for local testing only
 export const _checkSlowDrip = checkSlowDrip; // exported for local testing only
+export const _checkRateLimit = checkRateLimit; // exported for local testing only

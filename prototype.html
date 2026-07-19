@@ -1959,12 +1959,18 @@ async function getAIResponse(room, text) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ brawler: room, message: text, recentHistory: history.slice(-10) })
   });
-  if (!res.ok) throw new Error('brawler-chat responded ' + res.status);
+  // M3: a 429 (server-side rate limit) still carries a real in-character
+  // deflection in its body — surface it like a normal reply instead of
+  // falling through to the generic error path below, which would silently
+  // swap in the written engine and hide that the limit was ever hit.
+  if (!res.ok && res.status !== 429) throw new Error('brawler-chat responded ' + res.status);
   const data = await res.json();
   if (!data || typeof data.reply !== 'string') throw new Error('brawler-chat: malformed response');
-  history.push({ role: 'user', content: text });
-  history.push({ role: 'assistant', content: data.reply });
-  chatHistory[room] = history.slice(-10);
+  if (res.status !== 429) {
+    history.push({ role: 'user', content: text });
+    history.push({ role: 'assistant', content: data.reply });
+    chatHistory[room] = history.slice(-10);
+  }
   return data.reply;
 }
 
