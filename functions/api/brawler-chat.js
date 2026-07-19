@@ -310,11 +310,16 @@ export async function onRequest(context) {
 
   // M3: rate limit only the real, cost-incurring path — mock mode above is
   // already free and unlimited by construction, no need to gate it too.
+  // Status is 200, not 429: the frontend treats any non-2xx identically
+  // (falls back to the written engine), which would silently hide this
+  // deflection from the player entirely. Reusing the SAFETY_DEFLECTION
+  // pattern instead guarantees they actually see it. The 429 semantics
+  // aren't lost, just moved to the log line below for monitoring.
   const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rateLimit = await checkRateLimit(env.RATE_LIMIT_KV, clientIP);
   if (rateLimit.limited) {
-    console.warn('brawler-chat: rate limited', { brawler, reason: rateLimit.reason });
-    return json({ reply: RATE_LIMIT_DEFLECTION }, 429);
+    console.warn('brawler-chat: rate limited (429-equivalent)', { brawler, reason: rateLimit.reason });
+    return json({ reply: RATE_LIMIT_DEFLECTION });
   }
 
   try {
